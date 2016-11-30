@@ -25,6 +25,9 @@ namespace Microsoft.EntityFrameworkCore.Internal
         public static ColumnExpression TryGetColumnExpression([NotNull] this AliasExpression aliasExpression)
             => aliasExpression.Expression as ColumnExpression;
 
+        public static Expression UnwrapAliasExpression([NotNull] this Expression expression)
+            => (expression as AliasExpression)?.Expression ?? expression;
+
         public static bool IsSimpleExpression([NotNull] this Expression expression)
         {
             var unwrappedExpression = expression.RemoveConvert();

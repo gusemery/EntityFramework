@@ -1143,7 +1143,7 @@ ORDER BY [e].[EmployeeID] - [e].[EmployeeID]",
             base.OrderBy_condition_comparison();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 ORDER BY CASE
     WHEN [p].[UnitsInStock] > 0
@@ -1157,7 +1157,7 @@ END, [p].[ProductID]",
             base.OrderBy_ternary_conditions();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 ORDER BY CASE
     WHEN (([p].[UnitsInStock] > 10) AND ([p].[ProductID] > 40)) OR (([p].[UnitsInStock] <= 10) AND ([p].[ProductID] <= 40))
@@ -1241,6 +1241,17 @@ FROM [Order Details] AS [od]", Sql);
 FROM [Order Details] AS [od]", Sql);
         }
 
+        public override void Sum_with_coalesce()
+        {
+            base.Sum_with_coalesce();
+
+            Assert.Equal(
+                @"SELECT SUM(COALESCE([p].[UnitPrice], 0.0))
+FROM [Products] AS [p]
+WHERE [p].[ProductID] < 40",
+                Sql);
+        }
+
         public override void Min_with_no_arg()
         {
             base.Min_with_no_arg();
@@ -1261,6 +1272,17 @@ FROM [Orders] AS [o]",
                 Sql);
         }
 
+        public override void Min_with_coalesce()
+        {
+            base.Min_with_coalesce();
+
+            Assert.Equal(
+                @"SELECT MIN(COALESCE([p].[UnitPrice], 0.0))
+FROM [Products] AS [p]
+WHERE [p].[ProductID] < 40",
+                Sql);
+        }
+
         public override void Max_with_no_arg()
         {
             base.Max_with_no_arg();
@@ -1278,6 +1300,17 @@ FROM [Orders] AS [o]",
             Assert.Equal(
                 @"SELECT MAX([o].[OrderID])
 FROM [Orders] AS [o]",
+                Sql);
+        }
+
+        public override void Max_with_coalesce()
+        {
+            base.Max_with_coalesce();
+
+            Assert.Equal(
+                @"SELECT MAX(COALESCE([p].[UnitPrice], 0.0))
+FROM [Products] AS [p]
+WHERE [p].[ProductID] < 40",
                 Sql);
         }
 
@@ -4023,7 +4056,7 @@ WHERE [c].[CustomerID] = N'ALFKI'",
             base.Where_ternary_boolean_condition();
 
             Assert.Contains(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE ((@__flag_0 = 1) AND ([p].[UnitsInStock] >= 20)) OR ((@__flag_0 <> 1) AND ([p].[UnitsInStock] < 20))",
                 Sql);
@@ -4037,7 +4070,7 @@ WHERE ((@__flag_0 = 1) AND ([p].[UnitsInStock] >= 20)) OR ((@__flag_0 <> 1) AND 
                 @"@__productId_0: 15
 @__flag_1: True
 
-SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE ([p].[ProductID] < @__productId_0) AND (((@__flag_1 = 1) AND ([p].[UnitsInStock] >= 20)) OR ((@__flag_1 <> 1) AND ([p].[UnitsInStock] < 20)))",
                 Sql);
@@ -4048,7 +4081,7 @@ WHERE ([p].[ProductID] < @__productId_0) AND (((@__flag_1 = 1) AND ([p].[UnitsIn
             base.Where_ternary_boolean_condition_with_false_as_result();
 
             Assert.Contains(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE (@__flag_0 = 1) AND ([p].[UnitsInStock] >= 20)",
                 Sql);
@@ -4115,7 +4148,7 @@ WHERE [t].[EmployeeID] = 5",
             base.Where_bool_member();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[Discontinued] = 1",
                 Sql);
@@ -4126,7 +4159,7 @@ WHERE [p].[Discontinued] = 1",
             base.Where_bool_member_false();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[Discontinued] = 0",
                 Sql);
@@ -4137,7 +4170,7 @@ WHERE [p].[Discontinued] = 0",
             base.Where_bool_client_side_negated();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[Discontinued] = 1",
                 Sql);
@@ -4148,7 +4181,7 @@ WHERE [p].[Discontinued] = 1",
             base.Where_bool_member_negated_twice();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[Discontinued] = 1",
                 Sql);
@@ -4159,7 +4192,7 @@ WHERE [p].[Discontinued] = 1",
             base.Where_bool_member_shadow();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[Discontinued] = 1",
                 Sql);
@@ -4170,7 +4203,7 @@ WHERE [p].[Discontinued] = 1",
             base.Where_bool_member_false_shadow();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[Discontinued] = 0",
                 Sql);
@@ -4181,7 +4214,7 @@ WHERE [p].[Discontinued] = 0",
             base.Where_bool_member_equals_constant();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[Discontinued] = 1",
                 Sql);
@@ -4192,7 +4225,7 @@ WHERE [p].[Discontinued] = 1",
             base.Where_bool_member_in_complex_predicate();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE (([p].[ProductID] > 100) AND ([p].[Discontinued] = 1)) OR ([p].[Discontinued] = 1)",
                 Sql);
@@ -4203,7 +4236,7 @@ WHERE (([p].[ProductID] > 100) AND ([p].[Discontinued] = 1)) OR ([p].[Discontinu
             base.Where_bool_member_compared_to_binary_expression();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[Discontinued] = CASE
     WHEN [p].[ProductID] > 50
@@ -4217,7 +4250,7 @@ END",
             base.Where_not_bool_member_compared_to_binary_expression();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[Discontinued] <> CASE
     WHEN [p].[ProductID] > 50
@@ -4231,7 +4264,7 @@ END",
             base.Where_not_bool_member_compared_to_not_bool_member();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[Discontinued] = [p].[Discontinued]",
                 Sql);
@@ -4242,7 +4275,7 @@ WHERE [p].[Discontinued] = [p].[Discontinued]",
             base.Where_negated_boolean_expression_compared_to_another_negated_boolean_expression();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE CASE
     WHEN [p].[ProductID] > 50
@@ -4261,7 +4294,7 @@ END",
             Assert.Equal(
                 @"@__prm_0: True
 
-SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE @__prm_0 = 1",
                 Sql);
@@ -4274,7 +4307,7 @@ WHERE @__prm_0 = 1",
             Assert.Equal(
                 @"@__prm_0: True
 
-SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE CASE
     WHEN [p].[ProductID] > 50
@@ -4290,7 +4323,7 @@ END <> @__prm_0",
             Assert.Equal(
                 @"@__prm_0: True
 
-SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[Discontinued] = CASE
     WHEN CASE
@@ -4307,7 +4340,7 @@ END",
             base.Where_de_morgan_or_optimizated();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE ([p].[Discontinued] = 0) AND ([p].[ProductID] >= 20)",
                 Sql);
@@ -4318,7 +4351,7 @@ WHERE ([p].[Discontinued] = 0) AND ([p].[ProductID] >= 20)",
             base.Where_de_morgan_and_optimizated();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE ([p].[Discontinued] = 0) OR ([p].[ProductID] >= 20)",
                 Sql);
@@ -4329,7 +4362,7 @@ WHERE ([p].[Discontinued] = 0) OR ([p].[ProductID] >= 20)",
             base.Where_complex_negated_expression_optimized();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE (([p].[Discontinued] = 0) AND ([p].[ProductID] < 60)) AND ([p].[ProductID] > 30)",
                 Sql);
@@ -4340,7 +4373,7 @@ WHERE (([p].[Discontinued] = 0) AND ([p].[ProductID] < 60)) AND ([p].[ProductID]
             base.Where_short_member_comparison();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE [p].[UnitsInStock] > 10",
                 Sql);
@@ -5339,7 +5372,7 @@ FROM [Orders] AS [o]
             base.Where_subquery_on_bool();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE N'Chai' IN (
     SELECT [p2].[ProductName]
@@ -5353,7 +5386,7 @@ WHERE N'Chai' IN (
             base.Where_subquery_on_collection();
 
             Assert.Equal(
-                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitsInStock]
+                @"SELECT [p].[ProductID], [p].[Discontinued], [p].[ProductName], [p].[UnitPrice], [p].[UnitsInStock]
 FROM [Products] AS [p]
 WHERE 5 IN (
     SELECT [o].[Quantity]

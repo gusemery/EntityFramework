@@ -553,7 +553,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                 && handlerContext.SelectExpression.Projection.Count == 1)
             {
                 var expression = handlerContext.SelectExpression.Projection.First();
-                var minExpression = new SqlFunctionExpression("MIN", expression.Type, new[] { expression });
+                var minExpression = new SqlFunctionExpression("MIN", expression.Type, new[] { expression.UnwrapAliasExpression() });
 
                 handlerContext.SelectExpression.SetProjectionExpression(minExpression);
 
@@ -571,7 +571,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                 && handlerContext.SelectExpression.Projection.Count == 1)
             {
                 var expression = handlerContext.SelectExpression.Projection.First();
-                var maxExpression = new SqlFunctionExpression("MAX", expression.Type, new[] { expression });
+                var maxExpression = new SqlFunctionExpression("MAX", expression.Type, new[] { expression.UnwrapAliasExpression() });
 
                 handlerContext.SelectExpression.SetProjectionExpression(maxExpression);
 
@@ -728,7 +728,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                 && handlerContext.SelectExpression.Projection.Count == 1)
             {
                 var expression = handlerContext.SelectExpression.Projection.First();
-                var sumExpression = new SqlFunctionExpression("SUM", expression.Type, new[] { expression });
+                var sumExpression = new SqlFunctionExpression("SUM", expression.Type, new[] { expression.UnwrapAliasExpression() });
 
                 handlerContext.SelectExpression.SetProjectionExpression(sumExpression);
 
